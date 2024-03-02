@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tangram Memory Game</title>
+  <style>
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 10px;
+    }
+
+    .tile {
+      width: 100px;
+      height: 100px;
+      background-color: #f0f0f0;
+      border: 2px solid #ccc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .tile svg {
+      width: 80%;
+      height: 80%;
+      display: none;
+    }
+
+    .selected svg {
+      display: block;
+    }
+
+    .matched {
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tangram Memory Game</h1>
+  <div class="board" id="tangram-grid"></div>
+  <svg style="display:none" viewBox="0 0 100 100">
+    <defs>
+      <polygon id="tangram1" points="0 0, 50 50, 0 100" />
+      <polygon id="tangram2" points="50 50, 75 25, 100 50, 75 75" />
+      <polygon id="tangram3" points="0 100, 25 75, 75 75, 50 100"/>
+    </defs>
+  </svg>
+
+  <script>
+    const tangrams = [
+      { name: 'tangram1', color: 'red' },
+      { name: 'tangram2', color: 'green' },
+      { name: 'tangram3', color: 'blue' }
+    ];
+
+    const shuffledTangrams = [...tangrams, ...tangrams].sort(() => Math.random() - 0.5);
+
+    const board = document.getElementById('tangram-grid');
+
+    shuffledTangrams.forEach((tangram, index) => {
+      const tile = document.createElement('div');
+      tile.classList.add('tile');
+      tile.dataset.tangram = tangram.name;
+      tile.dataset.index = index;
+      tile.innerHTML = `<svg viewBox="0 0 100 100"><use xlink:href="#${tangram.name}" fill="${tangram.color}"></use></svg>`;
+      tile.addEventListener('click', handleTileClick);
+      board.appendChild(tile);
+    });
+
+    let selectedTiles = [];
+
+    function handleTileClick() {
+      const tile = this;
+      if (tile.classList.contains('matched')) return;
+      if (selectedTiles.length === 0 || selectedTiles.length === 1 && selectedTiles[0] !== tile) {
+        tile.classList.add('selected');
+        selectedTiles.push(tile);
+      }
+      if (selectedTiles.length === 2) {
+        const [firstTile, secondTile] = selectedTiles;
+        if (firstTile.dataset.tangram === secondTile.dataset.tangram) {
+          firstTile.classList.add('matched');
+          secondTile.classList.add('matched');
+        } else {
+          setTimeout(() => {
+            firstTile.classList.remove('selected');
+            secondTile.classList.remove('selected');
+          }, 1000);
+        }
+        selectedTiles = [];
+      }
+    }
+  </script>
+</body>
+</html>
