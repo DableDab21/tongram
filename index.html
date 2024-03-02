@@ -5,44 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tangram Memory Game</title>
   <style>
+    /* CSS стили */
+
+    /* CSS стили */
+    /* Определяем стили для игровой доски */
     .board {
       display: grid;
-      grid-template-columns: repeat(3, 100px);
+      grid-template-columns: repeat(3, 100px); /* Создаем сетку 3x3 с ячейками шириной 100px */
       grid-template-rows: repeat(3, 100px);
-      gap: 10px;
+      gap: 10px; /* Устанавливаем зазор между ячейками */
     }
 
+    /* CSS стили */
+    /* Определяем стили для плиток (tiles) */
     .tile {
       width: 100px;
       height: 100px;
-      background-color: #f0f0f0;
-      border: 2px solid #ccc;
+      background-color: #f0f0f0; /* Устанавливаем фоновый цвет */
+      border: 2px solid #ccc; /* Устанавливаем границы */
       display: flex;
       justify-content: center;
       align-items: center;
-      cursor: pointer;
+      cursor: pointer; /* Изменяем курсор при наведении */
     }
 
+    /* CSS стили */
+    /* Стили для SVG внутри плиток */
     .tile svg {
       width: 80%;
       height: 80%;
-      display: none;
+      display: none; /* Изначально скрываем SVG */
     }
 
+    /* CSS стили */
+    /* Стили для SVG, которые были выбраны */
     .selected svg {
-      display: block;
+      display: block; /* Показываем SVG при выборе */
     }
 
+    /* CSS стили */
+    /* Стили для плиток, которые совпали */
     .matched {
-      pointer-events: none;
+      pointer-events: none; /* Отключаем события для плиток, которые уже совпали */
     }
   </style>
 </head>
 <body>
   <h1>Tangram Memory Game</h1>
+  <!-- HTML разметка -->
+  <!-- Создаем контейнер для игровой доски -->
   <div class="board" id="tangram-grid"></div>
+  <!-- HTML разметка -->
+  <!-- SVG с определениями для геометрических фигур (изначально скрыт) -->
   <svg style="display:none" viewBox="0 0 100 100">
     <defs>
+      <!-- Определение фигур -->
       <polygon id="tangram1" points="0 0, 50 50, 0 100" />
       <polygon id="tangram2" points="50 50, 75 25, 100 50, 75 75" />
       <polygon id="tangram3" points="0 100, 25 75, 75 75, 50 100"/>
@@ -50,16 +67,26 @@
   </svg>
 
   <script>
+    /* JavaScript скрипт */
+
+    /* JavaScript скрипт */
+    /* Массив с данными о фигурах Tangram */
     const tangrams = [
       { name: 'tangram1', color: 'red' },
       { name: 'tangram2', color: 'green' },
       { name: 'tangram3', color: 'blue' }
     ];
 
+    /* JavaScript скрипт */
+    /* Перемешиваем фигуры и добавляем на доску */
     const shuffledTangrams = [...tangrams, ...tangrams].sort(() => Math.random() - 0.5);
 
+    /* JavaScript скрипт */
+    /* Получаем доступ к игровой доске */
     const board = document.getElementById('tangram-grid');
 
+    /* JavaScript скрипт */
+    /* Создаем плитки и добавляем на доску */
     shuffledTangrams.forEach((tangram, index) => {
       const tile = document.createElement('div');
       tile.classList.add('tile');
@@ -70,27 +97,31 @@
       board.appendChild(tile);
     });
 
+    /* JavaScript скрипт */
+    /* Массив для отслеживания выбранных плиток */
     let selectedTiles = [];
 
+    /* JavaScript скрипт */
+    /* Обработчик события клика по плитке */
     function handleTileClick() {
       const tile = this;
-      if (tile.classList.contains('matched')) return;
+      if (tile.classList.contains('matched')) return; /* Если плитка уже совпала, выходим */
       if (selectedTiles.length === 0 || selectedTiles.length === 1 && selectedTiles[0] !== tile) {
-        tile.classList.add('selected');
-        selectedTiles.push(tile);
+        tile.classList.add('selected'); /* Добавляем класс выбранной плитке */
+        selectedTiles.push(tile); /* Добавляем выбранную плитку в массив */
       }
-      if (selectedTiles.length === 2) {
+      if (selectedTiles.length === 2) { /* Если выбрано две плитки */
         const [firstTile, secondTile] = selectedTiles;
-        if (firstTile.dataset.tangram === secondTile.dataset.tangram) {
-          firstTile.classList.add('matched');
+        if (firstTile.dataset.tangram === secondTile.dataset.tangram) { /* Если выбранные плитки совпадают */
+          firstTile.classList.add('matched'); /* Помечаем плитки как совпавшие */
           secondTile.classList.add('matched');
         } else {
           setTimeout(() => {
-            firstTile.classList.remove('selected');
+            firstTile.classList.remove('selected'); /* Если не совпали, через некоторое время снимаем выделение */
             secondTile.classList.remove('selected');
           }, 1000);
         }
-        selectedTiles = [];
+        selectedTiles = []; /* Очищаем массив выбранных плиток */
       }
     }
   </script>
